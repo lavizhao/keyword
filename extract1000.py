@@ -9,7 +9,7 @@ if __name__ == '__main__':
     f = open("data/Train.csv")
 
     a = 0
-    sample_size = 10000
+    sample_size = 100000
 
     train = []
 
