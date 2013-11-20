@@ -3,6 +3,7 @@
 分析tag的数据分布
 '''
 
+import csv
 import sys
 from operator import itemgetter
 
@@ -75,6 +76,81 @@ def ana(keyword):
     avg(kt,total_passage)
     
     #topn(kt,10000)
+    return kt
+
+def init_tag_per(tag_per):
+    """
+    
+    Arguments:
+    - `tag_per`:
+    """
+    n = 5
+    for i in range(n):
+        temp = [0 for j in range(i+2)]
+        tag_per.append(temp)
+
+
+def topwords(kt):
+    """
+    
+    Arguments:
+    - `kt`:
+    """
+    result = []
+    limit = 20000
+    for (word,k) in kt:
+        if k > limit:
+            result.append(word)
+    return set(result)
+
+def count_per(line,tag_per,tws):
+    """
+    
+    Arguments:
+    - `kt`:
+    """
+    words = line.split()
+    words = [word.strip() for word in words]
+    n = len(words) 
+    tc = 0
+    for word in words:
+        if word in tws:
+            tc += 1
+
+    tag_per[n-1][tc] += 1
+    
+
+def ana_tag(train_file,kt):
+    """
+    
+    Arguments:
+    - `train_file`:
+    """
+    f = open(train_file)
+    reader = csv.reader(f)
+
+    tag_per = []
+    init_tag_per(tag_per)
+
+    tws = topwords(kt)
+
+    a = 0
+    for row in reader:
+        if a == 0:
+            a += 1
+            continue
+        else:
+            if a % 1000000 == 0:
+                print a
+            a += 1
+            count_per(row[3],tag_per,tws)
+            
+    for i in range(len(tag_per)):
+        s = sum(tag_per[i])
+        tag_per[i] = [1.0*e/s for e in tag_per[i]]
+        print "%s tag常用tag所占百分比"%(i+1),tag_per[i]
+    
+
     
 
 def usage():
@@ -82,15 +158,16 @@ def usage():
     """
     print '''
     可以这样调用:
-         python ana_tags.py ../data/keyword_freq.txt
+         python ana_tags.py ../data/keyword_freq.txt ../data/Train.csv
     '''
 
 if __name__ == '__main__':
     
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         usage()
         sys.exit(1)
 
     keyword = sys.argv[1]
-    ana(keyword)
-    
+    train_file = sys.argv[2]    
+    kt = ana(keyword)
+    ana_tag(train_file,kt)
