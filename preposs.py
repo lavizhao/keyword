@@ -1,6 +1,6 @@
 # coding: utf-8
 '''
-这个是处理抽样出来的文本预处理程序，规则什么的我还没有想好，慢慢想
+预处理程序，用;将数据和label分开
 '''
 
 import csv
@@ -76,12 +76,13 @@ def stem(body,stopwords):
     body = map(g2,body)
     body = set(body)
     body = filter(g4,body)
+    body = [i.strip() for i in body]
     body = ' '.join(body)
     body = map(g3,body)
     body = ''.join(body)
     return body
 
-def preposs(filename,sw_name):
+def preposs(filename,sw_name,write_name):
     """
     
     Arguments:
@@ -97,42 +98,47 @@ def preposs(filename,sw_name):
     f = open(filename)
     reader = csv.reader(f)
 
-    content = ""
+    k = open(write_name,"w")
 
     a = 0
-    end = 1000
     for row in reader:
         #print 20*'-'
-        if len(row) != 4 or a >= end:
+        if a == 0:
+            pass
+        if len(row) != 4 :
             break
-        row[2] = stem(row[2],stopwords)
+        row[2] = stem(row[1]+" "+row[2],stopwords)
+        row[3] = row[3].strip()
         #print row[2]
         #print "tags:==>",row[3]
         a += 1
-        content = content + " "+row[2] 
+        if a%1000 == 0:
+            print a
+        k.write(row[2]+"  ;  "+row[3]+"\n")
     return content
 
 def usage():
     """
     """
     print '''
-    该程序有一个参数，你需要在python pre_sub.py后面加入文件名 加上停顿词表名
+    该程序有一个参数，你需要在python pre_sub.py后面加入文件名 加上停顿词表名 加上要存储的文件名
     例如：
-       python pre_sub.py data/sub_train.csv data/stopwords.txt
+       python preposs.py data/Train.csv data/stopwords.txt data/train.txt
     '''
     
 if __name__ == '__main__':
 
-    if len(sys.argv)!=3:
+    if len(sys.argv)!=4:
         usage()
         sys.exit(2)
 
     print 30*'='
     train_file = sys.argv[1]
     sw_name = sys.argv[2]
+    write_name = sys.argv[3]
     print "将要预处理文件%s"%(train_file)
     
-    preposs(train_file,sw_name)
+    preposs(train_file,sw_name,write_name)
     
     print 30*'='
 
