@@ -29,15 +29,7 @@ def ana(keyword):
     #topn(kt,10000)
     return keyword,kt
 
-def usage():
-    """
-    """
-    print '''
-    这个文件是一个只是字符串匹配的，完全没有任何的显示学习的文本，只是为了涨一下姿势
-    想要调用，要输入：
-          python just_counting.py ../data/Test.csv ../data/keyword_freq.txt
-    '''
-    sys.exit(1)
+
 
 def count(line,words):
     """
@@ -45,15 +37,18 @@ def count(line,words):
     Arguments:
     - `line`:
     """
+    rwords = words.replace("-","_")
     words = words.split("-")
+    words.append(rwords)
     result = 1
+    sp = line.split()
     for word in words:
         if line.count(word) == 0:
             result -= 5 
             break
         else:
-            result += math.log(line.count(word)) + 10.0*(len(word)-0.9) - math.log((line.find(word)+1.0)/len(word))
-            #print result,word
+            result += math.log(line.count(word)*len(word)) + 12.0*(len(word)-1.0) - math.log((line.find(word)+1.0)/len(word))
+           #print result,word
 
     return result
 
@@ -75,8 +70,8 @@ def predict(title,line,keyword,kt):
         freq = count(line,rword)
         tfreq = count(title,rword)
         
-        if freq+tfreq > 1.9:
-            result[rword] = sigmoid(freq+tfreq) + (math.log(keyword[rword]) )/5
+        if freq+tfreq > 1.0:
+            result[rword] = sigmoid(freq+tfreq) + (math.log(keyword[rword]) )
 
     rt = sorted(result.iteritems(),key=itemgetter(1),reverse=True)
     #rt = [word for (word,k) in rt]
@@ -105,14 +100,11 @@ def output1(train_file,keyword,kt):
     a = 0
 
     for row in reader:
-        if a == 0:
-            a += 1
-            continue
-        title = row[1]
-        line = row[2]
+        title = row[0]
+        line = row[1]
         result = predict(title,line,keyword,kt)
-        print result,row[3]
-        if a == 4:
+        print result,row[2]
+        if a == 10:
             sys.exit(1)
         a += 1
 
@@ -141,7 +133,17 @@ def output(train_file,keyword,kt):
         title = " "
         result = predict(title,line,keyword,kt)
         print result,row[1].strip()
-    
+
+
+def usage():
+    """
+    """
+    print '''
+    这个文件是一个只是字符串匹配的，完全没有任何的显示学习的文本，只是为了涨一下姿势
+    想要调用，要输入：
+          python just_counting.py ../data/Test.csv ../data/keyword_freq.txt
+    '''
+    sys.exit(1)        
     
 if __name__ == '__main__':
     if len(sys.argv) != 3:
