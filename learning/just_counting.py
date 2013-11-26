@@ -6,6 +6,8 @@ import sys
 import csv
 import math
 from operator import itemgetter
+import nltk
+from nltk.metrics.distance import edit_distance as ed
 
 def ana(keyword):
     """
@@ -37,18 +39,21 @@ def count(line,words):
     Arguments:
     - `line`:
     """
-    rwords = words.replace("-","_")
     words = words.split("-")
-    words.append(rwords)
     result = 1
     sp = line.split()
+    #print words
     for word in words:
         if line.count(word) == 0:
             result -= 5 
             break
         else:
             result += math.log(line.count(word)*len(word)) + 12.0*(len(word)-1.0) - math.log((line.find(word)+1.0)/len(word))
-           #print result,word
+            #print result,word
+        #    pass
+        #result += 1.0 * (ed(word))
+    #for word in sp:
+    #    result += 1.0*(ed(word,words))/(len(word)+len(words)) 
 
     return result
 
@@ -74,13 +79,14 @@ def predict(title,line,keyword,kt):
             result[rword] = sigmoid(freq+tfreq) + (math.log(keyword[rword]) )
 
     rt = sorted(result.iteritems(),key=itemgetter(1),reverse=True)
-    #rt = [word for (word,k) in rt]
+    rt = [word for (word,k) in rt]
     rt = rt[:5]
     result = []
     #for (word,k) in rt:
     #    if k>1.0:
     #        result.append(word)
-    #return result        
+    #return result
+    rt = '"'+' '.join(rt)+'"'
     return rt
 
 def output1(train_file,keyword,kt):
@@ -118,22 +124,30 @@ def output(train_file,keyword,kt):
     print "输入文件：",test_file
 
     f = open(test_file)
+    reader = csv.reader(f)
     topk = [word for (word,k) in kt]
     topk = topk[:100]
 
     a = 0
 
-    while(True):
-        row = f.readline()
-        if a == 0:
-            a += 1
-            continue
-        row = row.split(';')
-        line = row[0]
-        title = " "
-        result = predict(title,line,keyword,kt)
-        print result,row[1].strip()
+    l = open("../data/label.txt")
+    label = l.readlines()[1:]
 
+    t = open("../data/result.csv","w")
+    t.write("Id,Tags\n")
+
+    for row in reader:
+        title = row[0]
+        line = row[1]
+        result = predict(title,line,keyword,kt)
+        #print label[a].strip(),result
+        t.write("%s,%s\n"%(label[a].strip(),result))
+        #if a == 15:
+        #    sys.exit(1)
+        if a%1000==0:
+            print a
+        a += 1
+    
 
 def usage():
     """
@@ -152,5 +166,8 @@ if __name__ == '__main__':
     test_file = sys.argv[1]    
     keyword = sys.argv[2]
     keyword,kt = ana(keyword)
-    output1(test_file,keyword,kt)
+    if test_file.count("test")!=0:
+        output(test_file,keyword,kt)
+    else:
+        output1(test_file,keyword,kt)
     

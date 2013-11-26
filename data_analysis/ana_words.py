@@ -32,7 +32,7 @@ def aw(kf,nc):
     twf = open(nc,"w")
     a = 0
     for line in keyword:
-        if len(line.split()) - 1 <= 100:
+        if len(line.split()) - 1 <= 200 :
             twf.write(line)
             a += 1
             
