@@ -138,7 +138,7 @@ if __name__ == '__main__':
     print "测试文件",test_file
     print "写入词表文件",test_vocab
 
-    #get_test_vocab(test_file,test_vocab)
+    get_test_vocab(test_file,test_vocab)
     remove_train(train_file,test_vocab,new_train)
     #get_vocab(train_file)
     #get_vocab(test_file)

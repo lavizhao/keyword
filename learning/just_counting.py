@@ -69,7 +69,7 @@ def predict(title,line,keyword,kt):
     """
     result = {}
     #tp = math.log(6034195.0)
-    kt = kt[:10000]
+    kt = kt[:3000]
     for (word,k) in kt:
         rword = word
         freq = count(line,rword)

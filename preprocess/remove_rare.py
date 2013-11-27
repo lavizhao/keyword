@@ -76,7 +76,7 @@ def find_rare(my_file,n):
             print a
         a += 1
     for word in wd:
-        if wd[word] <= 3:
+        if wd[word] <= n:
             result.append(word)
     print "rare words length :",len(set(result))
     return result
@@ -114,8 +114,8 @@ if __name__ == '__main__':
     
     train_long = find_long(train_file)
     test_long = find_long(test_file)
-    train_rare = find_rare(train_file,3)
-    test_rare = find_rare(test_file,3)
+    train_rare = find_rare(train_file,20)
+    test_rare = find_rare(test_file,20)
 
     write_file(ns,[train_long,test_long,train_rare,test_rare])
     
