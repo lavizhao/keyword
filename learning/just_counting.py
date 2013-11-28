@@ -69,18 +69,18 @@ def predict(title,line,keyword,kt):
     """
     result = {}
     #tp = math.log(6034195.0)
-    kt = kt[:3000]
+    kt = kt[:2000]
     for (word,k) in kt:
         rword = word
         freq = count(line,rword)
         tfreq = count(title,rword)
         
-        if freq+tfreq > 1.0:
+        if freq+tfreq > 1.9:
             result[rword] = sigmoid(freq+tfreq) + (math.log(keyword[rword]) )
 
     rt = sorted(result.iteritems(),key=itemgetter(1),reverse=True)
     rt = [word for (word,k) in rt]
-    rt = rt[:5]
+    rt = rt[:3]
     result = []
     #for (word,k) in rt:
     #    if k>1.0:
@@ -155,7 +155,7 @@ def usage():
     print '''
     这个文件是一个只是字符串匹配的，完全没有任何的显示学习的文本，只是为了涨一下姿势
     想要调用，要输入：
-          python just_counting.py ../data/Test.csv ../data/keyword_freq.txt
+          python just_counting.py ../data/test.csv ../data/keyword_freq.txt
     '''
     sys.exit(1)        
     
