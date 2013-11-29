@@ -36,3 +36,5 @@ nosetests.xml
 .project
 .pydevproject
 index/
+whoosh_index/
+xapian_index/
