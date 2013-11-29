@@ -6,10 +6,10 @@
 import csv
 
 if __name__ == '__main__':
-    f = open("data/Train.csv")
+    f = open("data/new_train.csv")
 
     a = 0
-    sample_size = 100000
+    sample_size = 100
 
     train = []
 
